@@ -24,6 +24,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.LauncherActivityInfo
 import android.content.pm.LauncherApps
+import android.content.pm.LauncherUserInfo
 import android.content.pm.ShortcutInfo
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
@@ -33,12 +34,14 @@ import android.os.Handler
 import android.os.Looper
 import android.os.Process.myUserHandle
 import android.os.UserHandle
+import android.os.UserManager
 import androidx.annotation.RequiresApi
 import com.eblan.launcher.domain.common.dispatcher.Dispatcher
 import com.eblan.launcher.domain.common.dispatcher.EblanDispatchers
 import com.eblan.launcher.domain.framework.FileManager
 import com.eblan.launcher.domain.framework.LauncherAppsWrapper
 import com.eblan.launcher.domain.framework.PackageManagerWrapper
+import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
@@ -158,7 +161,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
     override suspend fun getActivityList(): List<LauncherAppsActivityInfo> = withContext(defaultDispatcher) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            launcherApps.profiles.flatMap { userHandle ->
+            launcherApps.profiles.filterNot { userHandle ->
+                isPrivateSpaceEntryPointHidden(userHandle = userHandle)
+            }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()
 
                 launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
@@ -177,7 +182,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
     }
 
     override suspend fun getFastActivityList(): List<FastLauncherAppsActivityInfo> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        launcherApps.profiles.flatMap { userHandle ->
+        launcherApps.profiles.filterNot { userHandle ->
+            isPrivateSpaceEntryPointHidden(userHandle = userHandle)
+        }.flatMap { userHandle ->
             currentCoroutineContext().ensureActive()
 
             launcherApps.getActivityList(null, userHandle).map { launcherActivityInfo ->
@@ -217,9 +224,9 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 launcherApps.profiles.filter { userHandle ->
-                    userManagerWrapper.isUserRunning(userHandle = userHandle) && userManagerWrapper.isUserUnlocked(
-                        userHandle = userHandle,
-                    ) && !userManagerWrapper.isQuietModeEnabled(userHandle = userHandle)
+                    isUserAvailable(userHandle = userHandle)
+                }.filter { userHandle ->
+                    isUserAvailable(userHandle = userHandle)
                 }.flatMap { userHandle ->
                     currentCoroutineContext().ensureActive()
 
@@ -250,9 +257,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             launcherApps.profiles.filter { userHandle ->
-                userManagerWrapper.isUserRunning(userHandle = userHandle) && userManagerWrapper.isUserUnlocked(
-                    userHandle = userHandle,
-                ) && !userManagerWrapper.isQuietModeEnabled(userHandle = userHandle)
+                isUserAvailable(userHandle = userHandle)
             }.flatMap { userHandle ->
                 currentCoroutineContext().ensureActive()
 
@@ -324,10 +329,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         try {
-            if (userHandle != null && userManagerWrapper.isUserRunning(userHandle = userHandle) && userManagerWrapper.isUserUnlocked(
-                    userHandle = userHandle,
-                ) && !userManagerWrapper.isQuietModeEnabled(userHandle = userHandle)
-            ) {
+            if (userHandle != null && isUserAvailable(userHandle = userHandle)) {
                 launcherApps.startMainActivity(
                     ComponentName.unflattenFromString(componentName),
                     userHandle,
@@ -345,10 +347,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         sourceBounds: Rect,
     ) {
         try {
-            if (userManagerWrapper.isUserRunning(userHandle = myUserHandle()) && userManagerWrapper.isUserUnlocked(
-                    userHandle = myUserHandle(),
-                ) && !userManagerWrapper.isQuietModeEnabled(userHandle = myUserHandle())
-            ) {
+            if (isUserAvailable(userHandle = myUserHandle())) {
                 launcherApps.startMainActivity(
                     ComponentName.unflattenFromString(componentName),
                     myUserHandle(),
@@ -374,10 +373,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
 
         try {
-            if (userHandle != null && userManagerWrapper.isUserRunning(userHandle = userHandle) && userManagerWrapper.isUserUnlocked(
-                    userHandle = userHandle,
-                ) && !userManagerWrapper.isQuietModeEnabled(userHandle = userHandle)
-            ) {
+            if (userHandle != null && isUserAvailable(userHandle = userHandle)) {
                 launcherApps.startShortcut(
                     packageName,
                     id,
@@ -398,10 +394,7 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
         sourceBounds: Rect,
     ) {
         try {
-            if (userManagerWrapper.isUserRunning(userHandle = myUserHandle()) && userManagerWrapper.isUserUnlocked(
-                    userHandle = myUserHandle(),
-                ) && !userManagerWrapper.isQuietModeEnabled(userHandle = myUserHandle())
-            ) {
+            if (isUserAvailable(userHandle = myUserHandle())) {
                 launcherApps.startShortcut(
                     packageName,
                     id,
@@ -458,6 +451,53 @@ internal class DefaultLauncherAppsWrapper @Inject constructor(
             }
 
             launcherActivityInfo?.let(launcherApps::getShortcutConfigActivityIntent)
+        }
+    }
+
+    override fun getUserType(serialNumber: Long): EblanUserType {
+        val eblanUserType = EblanUserType(
+            serialNumber = serialNumber,
+            label = "User $serialNumber",
+        )
+
+        val userHandle = userManagerWrapper.getUserForSerialNumber(serialNumber = serialNumber)
+            ?: return eblanUserType
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            val launcherUserInfo =
+                launcherApps.getLauncherUserInfo(userHandle) ?: return eblanUserType
+
+            val label = when (launcherUserInfo.userType) {
+                UserManager.USER_TYPE_PROFILE_CLONE -> "Clone"
+                UserManager.USER_TYPE_PROFILE_MANAGED -> "Managed"
+                UserManager.USER_TYPE_PROFILE_PRIVATE -> "Private"
+                else -> "Personal"
+            }
+
+            EblanUserType(
+                serialNumber = serialNumber,
+                label = label,
+            )
+        } else {
+            eblanUserType
+        }
+    }
+
+    private fun isUserAvailable(userHandle: UserHandle): Boolean = userManagerWrapper.isUserRunning(userHandle = userHandle) && userManagerWrapper.isUserUnlocked(
+        userHandle = userHandle,
+    ) && !userManagerWrapper.isQuietModeEnabled(userHandle = userHandle)
+
+    private fun isPrivateSpaceEntryPointHidden(userHandle: UserHandle): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            val launcherUserInfo = launcherApps.getLauncherUserInfo(userHandle) ?: return false
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                launcherUserInfo.userConfig.getBoolean(LauncherUserInfo.PRIVATE_SPACE_ENTRYPOINT_HIDDEN)
+            } else {
+                false
+            }
+        } else {
+            false
         }
     }
 

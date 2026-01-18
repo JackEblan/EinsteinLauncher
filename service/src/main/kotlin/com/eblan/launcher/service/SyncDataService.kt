@@ -104,6 +104,10 @@ class SyncDataService : Service() {
                 addAction(Intent.ACTION_MANAGED_PROFILE_REMOVED)
                 addAction(Intent.ACTION_MANAGED_PROFILE_ADDED)
                 addAction(Intent.ACTION_MANAGED_PROFILE_UNLOCKED)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+                    addAction(Intent.ACTION_PROFILE_AVAILABLE)
+                    addAction(Intent.ACTION_PROFILE_UNAVAILABLE)
+                }
             },
         )
 

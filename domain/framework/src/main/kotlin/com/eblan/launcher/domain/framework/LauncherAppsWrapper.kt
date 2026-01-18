@@ -17,6 +17,7 @@
  */
 package com.eblan.launcher.domain.framework
 
+import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.FastLauncherAppsActivityInfo
 import com.eblan.launcher.domain.model.FastLauncherAppsShortcutInfo
 import com.eblan.launcher.domain.model.LauncherAppsActivityInfo
@@ -52,4 +53,6 @@ interface LauncherAppsWrapper {
         serialNumber: Long,
         packageName: String,
     ): List<ShortcutConfigActivityInfo>
+
+    fun getUserType(serialNumber: Long): EblanUserType
 }
