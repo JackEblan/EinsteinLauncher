@@ -282,6 +282,83 @@ class Migration7To8Test {
                 """.trimIndent(),
             )
 
+            // WidgetGridItemEntity
+            execSQL(
+                """
+            INSERT INTO WidgetGridItemEntity (
+                id,
+                folderId,
+                page,
+                startColumn,
+                startRow,
+                columnSpan,
+                rowSpan,
+                associate,
+                appWidgetId,
+                packageName,
+                componentName,
+                configure,
+                minWidth,
+                minHeight,
+                resizeMode,
+                minResizeWidth,
+                minResizeHeight,
+                maxResizeWidth,
+                maxResizeHeight,
+                targetCellHeight,
+                targetCellWidth,
+                preview,
+                label,
+                icon,
+                override,
+                serialNumber,
+                -- gridItemSettings fields (no prefix in v7)
+                iconSize,
+                textColor,
+                textSize,
+                showLabel,
+                singleLineLabel,
+                horizontalAlignment,
+                verticalArrangement
+            ) VALUES (
+                'widget_456',
+                NULL,
+                1,
+                0,
+                1,
+                2,
+                2,
+                'WIDGET',
+                1234,
+                'com.google.android.deskclock',
+                'com.google.android.deskclock.widget.AnalogClockWidgetProvider',
+                NULL,
+                110,
+                110,
+                15,
+                80,
+                80,
+                400,
+                400,
+                2,
+                2,
+                NULL,
+                'Clock',
+                'ic_clock_widget',
+                0,
+                2001,
+                -- gridItemSettings defaults / example values
+                0,
+                '#FF000000',
+                12,
+                1,
+                0,
+                'CENTER',
+                'CENTER'
+            )
+                """.trimIndent(),
+            )
+
             close()
         }
 
@@ -321,6 +398,10 @@ class Migration7To8Test {
         singleLineLabel,
         horizontalAlignment,
         verticalArrangement,
+        customTextColor,
+        customBackgroundColor,
+        padding,
+        cornerRadius,
         -- doubleTap
         doubleTap_eblanActionType,
         doubleTap_serialNumber,
@@ -386,6 +467,23 @@ class Migration7To8Test {
             assertEquals(
                 "CENTER",
                 cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+            )
+
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
             )
 
             // New gesture fields — should have default values after migration
@@ -459,6 +557,10 @@ class Migration7To8Test {
         singleLineLabel,
         horizontalAlignment,
         verticalArrangement,
+        customTextColor,
+        customBackgroundColor,
+        padding,
+        cornerRadius,
         -- doubleTap
         doubleTap_eblanActionType,
         doubleTap_serialNumber,
@@ -527,6 +629,23 @@ class Migration7To8Test {
                 cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
             )
 
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+            )
+
             // New gesture fields — should have default values after migration
             assertEquals(
                 "None",
@@ -592,6 +711,10 @@ class Migration7To8Test {
         singleLineLabel,
         horizontalAlignment,
         verticalArrangement,
+        customTextColor,
+        customBackgroundColor,
+        padding,
+        cornerRadius,
         -- doubleTap
         doubleTap_eblanActionType,
         doubleTap_serialNumber,
@@ -637,6 +760,23 @@ class Migration7To8Test {
             assertEquals(
                 "CENTER",
                 cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+            )
+
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
             )
 
             // New gesture fields — should have default values after migration
@@ -713,6 +853,10 @@ class Migration7To8Test {
         singleLineLabel,
         horizontalAlignment,
         verticalArrangement,
+        customTextColor,
+        customBackgroundColor,
+        padding,
+        cornerRadius,
         -- doubleTap
         doubleTap_eblanActionType,
         doubleTap_serialNumber,
@@ -790,6 +934,23 @@ class Migration7To8Test {
                 cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
             )
 
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("padding")),
+            )
+            assertEquals(
+                0,
+                cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")),
+            )
+
             // New gesture fields — should have default values after migration
             assertEquals(
                 "None",
@@ -829,6 +990,90 @@ class Migration7To8Test {
                 "",
                 cursor.getString(cursor.getColumnIndexOrThrow("swipeDown_componentName")),
             )
+        }
+
+        // Verify WidgetGridItemEntity
+        dbV8.query(
+            """
+        SELECT 
+            id,
+            folderId,
+            page,
+            startColumn,
+            startRow,
+            columnSpan,
+            rowSpan,
+            associate,
+            appWidgetId,
+            packageName,
+            componentName,
+            label,
+            icon,
+            override,
+            serialNumber,
+            -- gridItemSettings
+            iconSize,
+            textColor,
+            textSize,
+            showLabel,
+            singleLineLabel,
+            horizontalAlignment,
+            verticalArrangement,
+            customTextColor,
+            customBackgroundColor,
+            padding,
+            cornerRadius
+        FROM WidgetGridItemEntity
+        WHERE id = 'widget_456'
+            """.trimIndent(),
+        ).use { cursor ->
+            assertTrue(cursor.moveToFirst())
+
+            // Core identity & position fields – should remain unchanged
+            assertEquals("widget_456", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+            assertNull(cursor.getString(cursor.getColumnIndexOrThrow("folderId")))
+            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("page")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("startColumn")))
+            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("startRow")))
+            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("columnSpan")))
+            assertEquals(2, cursor.getInt(cursor.getColumnIndexOrThrow("rowSpan")))
+            assertEquals("WIDGET", cursor.getString(cursor.getColumnIndexOrThrow("associate")))
+
+            // Widget-specific fields
+            assertEquals(1234, cursor.getInt(cursor.getColumnIndexOrThrow("appWidgetId")))
+            assertEquals(
+                "com.google.android.deskclock",
+                cursor.getString(cursor.getColumnIndexOrThrow("packageName")),
+            )
+            assertEquals(
+                "com.google.android.deskclock.widget.AnalogClockWidgetProvider",
+                cursor.getString(cursor.getColumnIndexOrThrow("componentName")),
+            )
+            assertEquals("Clock", cursor.getString(cursor.getColumnIndexOrThrow("label")))
+            assertEquals("ic_clock_widget", cursor.getString(cursor.getColumnIndexOrThrow("icon")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("override")))
+            assertEquals(2001L, cursor.getLong(cursor.getColumnIndexOrThrow("serialNumber")))
+
+            // Existing gridItemSettings – should be preserved
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("iconSize")))
+            assertEquals("#FF000000", cursor.getString(cursor.getColumnIndexOrThrow("textColor")))
+            assertEquals(12, cursor.getInt(cursor.getColumnIndexOrThrow("textSize")))
+            assertEquals(1, cursor.getInt(cursor.getColumnIndexOrThrow("showLabel")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("singleLineLabel")))
+            assertEquals(
+                "CENTER",
+                cursor.getString(cursor.getColumnIndexOrThrow("horizontalAlignment")),
+            )
+            assertEquals(
+                "CENTER",
+                cursor.getString(cursor.getColumnIndexOrThrow("verticalArrangement")),
+            )
+
+            // New columns added in migration 7→8 – must exist and have default value 0
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("customTextColor")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("customBackgroundColor")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("padding")))
+            assertEquals(0, cursor.getInt(cursor.getColumnIndexOrThrow("cornerRadius")))
         }
     }
 }

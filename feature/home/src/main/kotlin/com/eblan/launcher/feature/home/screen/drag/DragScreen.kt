@@ -65,7 +65,6 @@ import com.eblan.launcher.feature.home.model.Screen
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
 import com.eblan.launcher.feature.home.util.calculatePage
-import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.handleWallpaperScroll
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
@@ -385,28 +384,13 @@ internal fun SharedTransitionScope.DragScreen(
                 columns = homeSettings.columns,
                 rows = homeSettings.rows,
                 content = { gridItem ->
-                    val gridItemSettings = if (gridItem.override) {
-                        gridItem.gridItemSettings
-                    } else {
-                        homeSettings.gridItemSettings
-                    }
-
-                    val textColor = if (gridItem.override) {
-                        getGridItemTextColor(
-                            systemTextColor = textColor,
-                            gridItemTextColor = gridItem.gridItemSettings.textColor,
-                        )
-                    } else {
-                        getSystemTextColor(textColor = textColor)
-                    }
-
                     val isDragging =
                         (drag == Drag.Start || drag == Drag.Dragging) && gridItem.id == gridItemSource.gridItem.id
 
                     GridItemContent(
                         gridItem = gridItem,
                         textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        gridItemSettings = homeSettings.gridItemSettings,
                         isDragging = isDragging,
                         statusBarNotifications = statusBarNotifications,
                         hasShortcutHostPermission = hasShortcutHostPermission,
@@ -426,7 +410,10 @@ internal fun SharedTransitionScope.DragScreen(
             gridHorizontalPagerState = gridHorizontalPagerState,
             infiniteScroll = homeSettings.infiniteScroll,
             pageCount = homeSettings.pageCount,
-            color = getSystemTextColor(textColor = textColor),
+            color = getSystemTextColor(
+                systemTextColor = textColor,
+                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+            ),
         )
 
         GridLayout(
@@ -441,28 +428,13 @@ internal fun SharedTransitionScope.DragScreen(
             columns = homeSettings.dockColumns,
             rows = homeSettings.dockRows,
             { gridItem ->
-                val gridItemSettings = if (gridItem.override) {
-                    gridItem.gridItemSettings
-                } else {
-                    homeSettings.gridItemSettings
-                }
-
-                val textColor = if (gridItem.override) {
-                    getGridItemTextColor(
-                        systemTextColor = textColor,
-                        gridItemTextColor = gridItem.gridItemSettings.textColor,
-                    )
-                } else {
-                    getSystemTextColor(textColor = textColor)
-                }
-
                 val isDragging =
                     (drag == Drag.Start || drag == Drag.Dragging) && gridItem.id == gridItemSource.gridItem.id
 
                 GridItemContent(
                     gridItem = gridItem,
                     textColor = textColor,
-                    gridItemSettings = gridItemSettings,
+                    gridItemSettings = homeSettings.gridItemSettings,
                     isDragging = isDragging,
                     statusBarNotifications = statusBarNotifications,
                     hasShortcutHostPermission = hasShortcutHostPermission,

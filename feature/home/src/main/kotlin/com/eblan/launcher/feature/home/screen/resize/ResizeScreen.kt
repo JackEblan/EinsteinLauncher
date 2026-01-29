@@ -45,6 +45,7 @@ import com.eblan.launcher.domain.model.Associate
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemCache
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.HomeSettings
 import com.eblan.launcher.domain.model.MoveGridItemResult
 import com.eblan.launcher.domain.model.TextColor
@@ -141,9 +142,11 @@ internal fun SharedTransitionScope.ResizeScreen(
     Column(
         modifier = modifier
             .pointerInput(key1 = Unit) {
-                detectTapGestures(onTap = {
-                    onResizeEnd(gridItem)
-                })
+                detectTapGestures(
+                    onTap = {
+                        onResizeEnd(gridItem)
+                    },
+                )
             }
             .fillMaxSize()
             .padding(paddingValues),
@@ -154,25 +157,10 @@ internal fun SharedTransitionScope.ResizeScreen(
             columns = homeSettings.columns,
             rows = homeSettings.rows,
             { gridItem ->
-                val gridItemSettings = if (gridItem.override) {
-                    gridItem.gridItemSettings
-                } else {
-                    homeSettings.gridItemSettings
-                }
-
-                val textColor = if (gridItem.override) {
-                    getGridItemTextColor(
-                        systemTextColor = textColor,
-                        gridItemTextColor = gridItem.gridItemSettings.textColor,
-                    )
-                } else {
-                    getSystemTextColor(textColor = textColor)
-                }
-
                 GridItemContent(
                     gridItem = gridItem,
                     textColor = textColor,
-                    gridItemSettings = gridItemSettings,
+                    gridItemSettings = homeSettings.gridItemSettings,
                     isDragging = false,
                     statusBarNotifications = statusBarNotifications,
                     hasShortcutHostPermission = hasShortcutHostPermission,
@@ -191,7 +179,10 @@ internal fun SharedTransitionScope.ResizeScreen(
             gridHorizontalPagerState = gridHorizontalPagerState,
             infiniteScroll = homeSettings.infiniteScroll,
             pageCount = homeSettings.pageCount,
-            color = getSystemTextColor(textColor = textColor),
+            color = getSystemTextColor(
+                systemTextColor = textColor,
+                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+            ),
         )
 
         GridLayout(
@@ -202,25 +193,10 @@ internal fun SharedTransitionScope.ResizeScreen(
             columns = homeSettings.dockColumns,
             rows = homeSettings.dockRows,
             { gridItem ->
-                val gridItemSettings = if (gridItem.override) {
-                    gridItem.gridItemSettings
-                } else {
-                    homeSettings.gridItemSettings
-                }
-
-                val textColor = if (gridItem.override) {
-                    getGridItemTextColor(
-                        systemTextColor = textColor,
-                        gridItemTextColor = gridItem.gridItemSettings.textColor,
-                    )
-                } else {
-                    getSystemTextColor(textColor = textColor)
-                }
-
                 GridItemContent(
                     gridItem = gridItem,
                     textColor = textColor,
-                    gridItemSettings = gridItemSettings,
+                    gridItemSettings = homeSettings.gridItemSettings,
                     isDragging = false,
                     statusBarNotifications = statusBarNotifications,
                     hasShortcutHostPermission = hasShortcutHostPermission,
@@ -265,6 +241,7 @@ internal fun SharedTransitionScope.ResizeScreen(
                 height = height,
                 textColor = textColor,
                 lockMovement = lockMovement,
+                gridItemSettings = homeSettings.gridItemSettings,
                 onResizeGridItem = onResizeGridItem,
             )
         }
@@ -300,6 +277,7 @@ internal fun SharedTransitionScope.ResizeScreen(
                 height = height,
                 textColor = textColor,
                 lockMovement = lockMovement,
+                gridItemSettings = homeSettings.gridItemSettings,
                 onResizeGridItem = onResizeGridItem,
             )
         }
@@ -321,6 +299,7 @@ private fun ResizeOverlay(
     height: Int,
     textColor: TextColor,
     lockMovement: Boolean,
+    gridItemSettings: GridItemSettings,
     onResizeGridItem: (
         gridItem: GridItem,
         columns: Int,
@@ -331,10 +310,15 @@ private fun ResizeOverlay(
     val currentTextColor = if (gridItem.override) {
         getGridItemTextColor(
             systemTextColor = textColor,
+            systemCustomTextColor = gridItemSettings.customTextColor,
             gridItemTextColor = gridItem.gridItemSettings.textColor,
+            gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
         )
     } else {
-        getSystemTextColor(textColor = textColor)
+        getSystemTextColor(
+            systemTextColor = textColor,
+            systemCustomTextColor = gridItemSettings.customTextColor,
+        )
     }
 
     when (val data = gridItem.data) {

@@ -56,10 +56,13 @@ import com.eblan.launcher.designsystem.icon.EblanLauncherIcons
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
 import com.eblan.launcher.domain.model.GridItemSettings
+import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.Screen
 import com.eblan.launcher.feature.home.model.SharedElementKey
+import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getHorizontalAlignment
+import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.getVerticalArrangement
 import com.eblan.launcher.ui.local.LocalAppWidgetHost
 import com.eblan.launcher.ui.local.LocalAppWidgetManager
@@ -70,7 +73,7 @@ import com.eblan.launcher.ui.local.LocalSettings
 internal fun SharedTransitionScope.GridItemContent(
     modifier: Modifier = Modifier,
     gridItem: GridItem,
-    textColor: Color,
+    textColor: TextColor,
     gridItemSettings: GridItemSettings,
     isDragging: Boolean,
     statusBarNotifications: Map<String, Int>,
@@ -81,10 +84,30 @@ internal fun SharedTransitionScope.GridItemContent(
     isScrollInProgress: Boolean,
 ) {
     key(gridItem.id) {
+        val currentGridItemSettings = if (gridItem.override) {
+            gridItem.gridItemSettings
+        } else {
+            gridItemSettings
+        }
+
+        val currentTextColor = if (gridItem.override) {
+            getGridItemTextColor(
+                systemTextColor = textColor,
+                systemCustomTextColor = gridItemSettings.customTextColor,
+                gridItemTextColor = gridItem.gridItemSettings.textColor,
+                gridItemCustomTextColor = gridItem.gridItemSettings.customTextColor,
+            )
+        } else {
+            getSystemTextColor(
+                systemTextColor = textColor,
+                systemCustomTextColor = gridItemSettings.customTextColor,
+            )
+        }
+
         if (isDragging) {
             WhiteBox(
                 modifier = modifier,
-                textColor = textColor,
+                textColor = currentTextColor,
             )
         } else {
             when (val data = gridItem.data) {
@@ -93,8 +116,8 @@ internal fun SharedTransitionScope.GridItemContent(
                         modifier = modifier,
                         gridItem = gridItem,
                         data = data,
-                        textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        textColor = currentTextColor,
+                        gridItemSettings = currentGridItemSettings,
                         statusBarNotifications = statusBarNotifications,
                         drag = drag,
                         iconPackFilePaths = iconPackFilePaths,
@@ -119,8 +142,8 @@ internal fun SharedTransitionScope.GridItemContent(
                         modifier = modifier,
                         gridItem = gridItem,
                         data = data,
-                        textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        textColor = currentTextColor,
+                        gridItemSettings = currentGridItemSettings,
                         hasShortcutHostPermission = hasShortcutHostPermission,
                         drag = drag,
                         screen = screen,
@@ -133,8 +156,8 @@ internal fun SharedTransitionScope.GridItemContent(
                         modifier = modifier,
                         gridItem = gridItem,
                         data = data,
-                        textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        textColor = currentTextColor,
+                        gridItemSettings = currentGridItemSettings,
                         drag = drag,
                         iconPackFilePaths = iconPackFilePaths,
                         screen = screen,
@@ -147,8 +170,8 @@ internal fun SharedTransitionScope.GridItemContent(
                         modifier = modifier,
                         gridItem = gridItem,
                         data = data,
-                        textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        textColor = currentTextColor,
+                        gridItemSettings = currentGridItemSettings,
                         drag = drag,
                         screen = screen,
                         isScrollInProgress = isScrollInProgress,
@@ -558,7 +581,13 @@ private fun SharedTransitionScope.ApplicationInfoGridItem(
         getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -601,7 +630,13 @@ private fun SharedTransitionScope.ShortcutInfoGridItem(
         getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -643,7 +678,13 @@ private fun SharedTransitionScope.FolderGridItem(
         getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {
@@ -734,7 +775,13 @@ private fun SharedTransitionScope.ShortcutConfigGridItem(
         getVerticalArrangement(verticalArrangement = gridItemSettings.verticalArrangement)
 
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .padding(gridItemSettings.padding.dp)
+            .background(
+                color = Color(gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = gridItemSettings.cornerRadius.dp),
+            ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
     ) {

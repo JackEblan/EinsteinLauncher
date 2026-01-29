@@ -68,8 +68,6 @@ import com.eblan.launcher.feature.home.component.grid.GridItemContent
 import com.eblan.launcher.feature.home.component.grid.GridLayout
 import com.eblan.launcher.feature.home.model.Drag
 import com.eblan.launcher.feature.home.model.Screen
-import com.eblan.launcher.feature.home.util.getGridItemTextColor
-import com.eblan.launcher.feature.home.util.getSystemTextColor
 import com.eblan.launcher.feature.home.util.handleActionMainIntent
 import kotlinx.coroutines.launch
 
@@ -186,29 +184,10 @@ internal fun SharedTransitionScope.EditPageScreen(
                             columns = homeSettings.columns,
                             rows = homeSettings.rows,
                             { gridItem ->
-                                val gridItemSettings = if (gridItem.override) {
-                                    gridItem.gridItemSettings
-                                } else {
-                                    homeSettings.gridItemSettings
-                                }.run {
-                                    copy(
-                                        iconSize = iconSize / 2,
-                                        textSize = textSize / 2,
-                                    )
-                                }
-                                val textColor = if (gridItem.override) {
-                                    getGridItemTextColor(
-                                        systemTextColor = textColor,
-                                        gridItemTextColor = gridItem.gridItemSettings.textColor,
-                                    )
-                                } else {
-                                    getSystemTextColor(textColor = textColor)
-                                }
-
                                 GridItemContent(
                                     gridItem = gridItem,
                                     textColor = textColor,
-                                    gridItemSettings = gridItemSettings,
+                                    gridItemSettings = homeSettings.gridItemSettings,
                                     isDragging = false,
                                     statusBarNotifications = emptyMap(),
                                     hasShortcutHostPermission = hasShortcutHostPermission,

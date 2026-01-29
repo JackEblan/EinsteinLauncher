@@ -13,7 +13,7 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="migrate6To7()">
+      <SelectionState runConfigName="migrate7To8()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

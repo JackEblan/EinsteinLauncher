@@ -21,4 +21,5 @@ enum class TextColor {
     System,
     Light,
     Dark,
+    Custom,
 }

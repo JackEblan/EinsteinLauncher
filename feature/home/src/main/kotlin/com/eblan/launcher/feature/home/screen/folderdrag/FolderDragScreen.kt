@@ -64,7 +64,6 @@ import com.eblan.launcher.feature.home.model.Screen
 import com.eblan.launcher.feature.home.model.SharedElementKey
 import com.eblan.launcher.feature.home.screen.drag.handlePageDirection
 import com.eblan.launcher.feature.home.util.PAGE_INDICATOR_HEIGHT
-import com.eblan.launcher.feature.home.util.getGridItemTextColor
 import com.eblan.launcher.feature.home.util.getSystemTextColor
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -208,7 +207,10 @@ internal fun SharedTransitionScope.FolderDragScreen(
 
             Text(
                 text = folderDataById.label,
-                color = getSystemTextColor(textColor = textColor),
+                color = getSystemTextColor(
+                    systemTextColor = textColor,
+                    systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+                ),
                 style = MaterialTheme.typography.headlineLarge,
             )
 
@@ -230,21 +232,6 @@ internal fun SharedTransitionScope.FolderDragScreen(
                 columns = homeSettings.folderColumns,
                 rows = homeSettings.folderRows,
                 content = { gridItem ->
-                    val gridItemSettings = if (gridItem.override) {
-                        gridItem.gridItemSettings
-                    } else {
-                        homeSettings.gridItemSettings
-                    }
-
-                    val textColor = if (gridItem.override) {
-                        getGridItemTextColor(
-                            systemTextColor = textColor,
-                            gridItemTextColor = gridItem.gridItemSettings.textColor,
-                        )
-                    } else {
-                        getSystemTextColor(textColor = textColor)
-                    }
-
                     val isDragging = (
                         drag == Drag.Start ||
                             drag == Drag.Dragging
@@ -254,7 +241,7 @@ internal fun SharedTransitionScope.FolderDragScreen(
                     GridItemContent(
                         gridItem = gridItem,
                         textColor = textColor,
-                        gridItemSettings = gridItemSettings,
+                        gridItemSettings = homeSettings.gridItemSettings,
                         isDragging = isDragging,
                         statusBarNotifications = statusBarNotifications,
                         hasShortcutHostPermission = hasShortcutHostPermission,
@@ -274,7 +261,10 @@ internal fun SharedTransitionScope.FolderDragScreen(
             gridHorizontalPagerState = folderGridHorizontalPagerState,
             infiniteScroll = false,
             pageCount = folderDataById.pageCount,
-            color = getSystemTextColor(textColor = textColor),
+            color = getSystemTextColor(
+                systemTextColor = textColor,
+                systemCustomTextColor = homeSettings.gridItemSettings.customTextColor,
+            ),
         )
     }
 }

@@ -25,6 +25,10 @@ data class GridItemSettings(
     val singleLineLabel: Boolean,
     val horizontalAlignment: HorizontalAlignment,
     val verticalArrangement: VerticalArrangement,
+    val customTextColor: Int,
+    val customBackgroundColor: Int,
+    val padding: Int,
+    val cornerRadius: Int,
 )
 
 enum class HorizontalAlignment {

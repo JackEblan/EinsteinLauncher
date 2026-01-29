@@ -22,235 +22,367 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 class Migration7To8 : Migration(7, 8) {
     override fun migrate(db: SupportSQLiteDatabase) {
+        updateApplicationInfoGridItemEntities(db)
+
+        updateShortcutInfoGridItemEntities(db)
+
+        updateFolderGridItemEntities(db)
+
+        updateShortcutConfigGridItemEntities(db)
+
+        updateWidgetGridItemEntities(db)
+    }
+
+    private fun updateApplicationInfoGridItemEntities(db: SupportSQLiteDatabase) {
         // Add action columns to ApplicationInfoGridItemEntity
         db.execSQL(
             """
-            ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ApplicationInfoGridItemEntity 
+                ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+            ADD COLUMN customTextColor INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        db.execSQL(
-            """
-            ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            ADD COLUMN customBackgroundColor INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
+            ADD COLUMN padding INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
+            ADD COLUMN cornerRadius INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
+    }
 
+    private fun updateShortcutInfoGridItemEntities(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
-            ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ApplicationInfoGridItemEntity 
-            ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        // Add action columns to ShortcutInfoGridItemEntity
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
             """.trimIndent(),
         )
-
         db.execSQL(
             """
-            ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ShortcutInfoGridItemEntity 
+                ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+            ADD COLUMN customTextColor INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
             ALTER TABLE ShortcutInfoGridItemEntity 
-            ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
+            ADD COLUMN customBackgroundColor INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutInfoGridItemEntity 
+            ADD COLUMN padding INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutInfoGridItemEntity 
+            ADD COLUMN cornerRadius INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+    }
+
+    private fun updateFolderGridItemEntities(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE FolderGridItemEntity 
+                ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE FolderGridItemEntity 
+            ADD COLUMN customTextColor INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE FolderGridItemEntity 
+            ADD COLUMN customBackgroundColor INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE FolderGridItemEntity 
+            ADD COLUMN padding INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE FolderGridItemEntity 
+            ADD COLUMN cornerRadius INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+    }
+
+    private fun updateShortcutConfigGridItemEntities(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            """
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
 
-        // Add action columns to FolderGridItemEntity
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        db.execSQL(
-            """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
-            """.trimIndent(),
-        )
-        db.execSQL(
-            """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
-            """.trimIndent(),
-        )
-        db.execSQL(
-            """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
 
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE FolderGridItemEntity 
-            ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
+                ALTER TABLE ShortcutConfigGridItemEntity 
+                ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
             """.trimIndent(),
         )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutConfigGridItemEntity 
+            ADD COLUMN customTextColor INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutConfigGridItemEntity 
+            ADD COLUMN customBackgroundColor INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutConfigGridItemEntity 
+            ADD COLUMN padding INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+        db.execSQL(
+            """
+            ALTER TABLE ShortcutConfigGridItemEntity 
+            ADD COLUMN cornerRadius INTEGER NOT NULL DEFAULT 0
+            """.trimIndent(),
+        )
+    }
 
-        // Add action columns to ShortcutConfigGridItemEntity
+    private fun updateWidgetGridItemEntities(db: SupportSQLiteDatabase) {
         db.execSQL(
             """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN doubleTap_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE WidgetGridItemEntity 
+                ADD COLUMN customTextColor INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN doubleTap_serialNumber INTEGER NOT NULL DEFAULT 0
+                ALTER TABLE WidgetGridItemEntity 
+                ADD COLUMN customBackgroundColor INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN doubleTap_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeUp_eblanActionType TEXT NOT NULL DEFAULT 'None'
+                ALTER TABLE WidgetGridItemEntity 
+                ADD COLUMN padding INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
         db.execSQL(
             """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeUp_serialNumber INTEGER NOT NULL DEFAULT 0
-            """.trimIndent(),
-        )
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeUp_componentName TEXT NOT NULL DEFAULT ''
-            """.trimIndent(),
-        )
-
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeDown_eblanActionType TEXT NOT NULL DEFAULT 'None'
-            """.trimIndent(),
-        )
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeDown_serialNumber INTEGER NOT NULL DEFAULT 0
-            """.trimIndent(),
-        )
-        db.execSQL(
-            """
-            ALTER TABLE ShortcutConfigGridItemEntity 
-            ADD COLUMN swipeDown_componentName TEXT NOT NULL DEFAULT ''
+                ALTER TABLE WidgetGridItemEntity 
+                ADD COLUMN cornerRadius INTEGER NOT NULL DEFAULT 0
             """.trimIndent(),
         )
     }

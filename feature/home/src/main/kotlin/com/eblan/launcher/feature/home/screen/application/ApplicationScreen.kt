@@ -120,6 +120,7 @@ import com.eblan.launcher.domain.model.EblanUserType
 import com.eblan.launcher.domain.model.GetEblanApplicationInfosByLabel
 import com.eblan.launcher.domain.model.GridItem
 import com.eblan.launcher.domain.model.GridItemData
+import com.eblan.launcher.domain.model.GridItemSettings
 import com.eblan.launcher.domain.model.ManagedProfileResult
 import com.eblan.launcher.domain.model.TextColor
 import com.eblan.launcher.feature.home.component.scroll.OffsetNestedScrollConnection
@@ -164,7 +165,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
     isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     screen: Screen,
-    textColor: TextColor,
     klwpIntegration: Boolean,
     alpha: Float,
     cornerSize: Dp,
@@ -216,7 +216,6 @@ internal fun SharedTransitionScope.ApplicationScreen(
             isPressHome = isPressHome,
             managedProfileResult = managedProfileResult,
             screen = screen,
-            textColor = textColor,
             klwpIntegration = klwpIntegration,
             onLongPressGridItem = onLongPressGridItem,
             onUpdateGridItemOffset = onUpdateGridItemOffset,
@@ -249,7 +248,6 @@ private fun SharedTransitionScope.Success(
     isPressHome: Boolean,
     managedProfileResult: ManagedProfileResult?,
     screen: Screen,
-    textColor: TextColor,
     klwpIntegration: Boolean,
     onLongPressGridItem: (
         gridItemSource: GridItemSource,
@@ -366,8 +364,6 @@ private fun SharedTransitionScope.Success(
                     iconPackFilePaths = iconPackFilePaths,
                     managedProfileResult = managedProfileResult,
                     screen = screen,
-                    textColor = textColor,
-                    klwpIntegration = klwpIntegration,
                     onLongPressGridItem = onLongPressGridItem,
                     onUpdateGridItemOffset = { intOffset, intSize ->
                         onUpdateGridItemOffset(intOffset, intSize)
@@ -396,8 +392,6 @@ private fun SharedTransitionScope.Success(
                 iconPackFilePaths = iconPackFilePaths,
                 managedProfileResult = managedProfileResult,
                 screen = screen,
-                textColor = textColor,
-                klwpIntegration = klwpIntegration,
                 onLongPressGridItem = onLongPressGridItem,
                 onUpdateGridItemOffset = { intOffset, intSize ->
                     onUpdateGridItemOffset(intOffset, intSize)
@@ -498,8 +492,6 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
     paddingValues: PaddingValues,
     iconPackFilePaths: Map<String, String>,
     screen: Screen,
-    textColor: TextColor,
-    klwpIntegration: Boolean,
     onUpdateGridItemOffset: (
         intOffset: IntOffset,
         intSize: IntSize,
@@ -526,14 +518,10 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
 
     val launcherApps = LocalLauncherApps.current
 
-    val textColor = if (klwpIntegration) {
-        getGridItemTextColor(
-            systemTextColor = textColor,
-            gridItemTextColor = appDrawerSettings.gridItemSettings.textColor,
-        )
-    } else {
-        getSystemTextColor(textColor = appDrawerSettings.gridItemSettings.textColor)
-    }
+    val textColor = getSystemTextColor(
+        systemTextColor = appDrawerSettings.gridItemSettings.textColor,
+        systemCustomTextColor = appDrawerSettings.gridItemSettings.customTextColor,
+    )
 
     val appDrawerRowsHeight = appDrawerSettings.appDrawerRowsHeight.dp
 
@@ -697,6 +685,11 @@ private fun SharedTransitionScope.EblanApplicationInfoItem(
             .scale(
                 scaleX = scale.value,
                 scaleY = scale.value,
+            )
+            .padding(appDrawerSettings.gridItemSettings.padding.dp)
+            .background(
+                color = Color(appDrawerSettings.gridItemSettings.customBackgroundColor),
+                shape = RoundedCornerShape(size = appDrawerSettings.gridItemSettings.cornerRadius.dp),
             ),
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
@@ -779,8 +772,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
     iconPackFilePaths: Map<String, String>,
     managedProfileResult: ManagedProfileResult?,
     screen: Screen,
-    textColor: TextColor,
-    klwpIntegration: Boolean,
     onLongPressGridItem: (
         gridItemSource: GridItemSource,
         imageBitmap: ImageBitmap?,
@@ -848,8 +839,6 @@ private fun SharedTransitionScope.EblanApplicationInfosPage(
                 getEblanApplicationInfosByLabel = getEblanApplicationInfosByLabel,
                 iconPackFilePaths = iconPackFilePaths,
                 screen = screen,
-                textColor = textColor,
-                klwpIntegration = klwpIntegration,
                 managedProfileResult = managedProfileResult,
                 onLongPressGridItem = onLongPressGridItem,
                 onUpdateGridItemOffset = onUpdateGridItemOffset,
@@ -953,8 +942,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
     getEblanApplicationInfosByLabel: GetEblanApplicationInfosByLabel,
     iconPackFilePaths: Map<String, String>,
     screen: Screen,
-    textColor: TextColor,
-    klwpIntegration: Boolean,
     managedProfileResult: ManagedProfileResult?,
     onLongPressGridItem: (
         gridItemSource: GridItemSource,
@@ -1036,8 +1023,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                                 paddingValues = paddingValues,
                                 iconPackFilePaths = iconPackFilePaths,
                                 screen = screen,
-                                textColor = textColor,
-                                klwpIntegration = klwpIntegration,
                                 onUpdateGridItemOffset = onUpdateGridItemOffset,
                                 onLongPressGridItem = onLongPressGridItem,
                                 onUpdatePopupMenu = onUpdatePopupMenu,
@@ -1056,8 +1041,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                         appDrawerSettings = appDrawerSettings,
                         paddingValues = paddingValues,
                         iconPackFilePaths = iconPackFilePaths,
-                        textColor = textColor,
-                        klwpIntegration = klwpIntegration,
                         onUpdateGridItemOffset = onUpdateGridItemOffset,
                         onLongPressGridItem = onLongPressGridItem,
                         onUpdatePopupMenu = onUpdatePopupMenu,
@@ -1078,8 +1061,6 @@ private fun SharedTransitionScope.EblanApplicationInfos(
                                 paddingValues = paddingValues,
                                 iconPackFilePaths = iconPackFilePaths,
                                 screen = screen,
-                                textColor = textColor,
-                                klwpIntegration = klwpIntegration,
                                 onUpdateGridItemOffset = onUpdateGridItemOffset,
                                 onLongPressGridItem = onLongPressGridItem,
                                 onUpdatePopupMenu = onUpdatePopupMenu,
